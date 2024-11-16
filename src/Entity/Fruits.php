@@ -8,23 +8,23 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use App\Controller\MyController;
 use App\Repository\FruitsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FruitsRepository::class)]
 #[ApiResource(
-    // shortName: 'appleFruit',
     operations: [
         new Get(),
-        new Get(uriTemplate: '/apple/mango', controller: MyController::class),
-        new Patch(),
-        new Delete(),
-        new GetCollection(),
+        // new Patch(),
+        // new Delete(),
+        // new GetCollection(),
         new Post(),
     ]
 )]
+#[HasLifecycleCallbacks]
 class Fruits
 {
     #[ORM\Id]
@@ -36,12 +36,30 @@ class Fruits
      * This is name of the fruit
      */
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'Name can\'t be blank.'
+    )]
+    #[Assert\Length(
+        min: 5,
+        max: 100,
+        minMessage: 'Name should minimum {{ limit }} characters',
+        maxMessage: 'Name should maximum {{ limit }} characters'
+    )]
     private ?string $name = null;
 
     /**
      * This is description of the fruit
      */
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(
+        message: 'Description can\'t be blank.'
+    )]
+    #[Assert\Length(
+        min: 30,
+        max: 500,
+        minMessage: 'Description should minimum {{ limit }} characters',
+        maxMessage: 'Description should maximum {{ limit }} characters'
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
