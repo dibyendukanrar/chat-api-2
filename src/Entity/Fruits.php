@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use App\Entity\Traits\CommonEntityTrait;
 use App\Repository\FruitsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,6 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[HasLifecycleCallbacks]
 class Fruits
 {
+    use CommonEntityTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -122,16 +125,6 @@ class Fruits
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    #[ORM\PrePersist]
-    #[ORM\PreUpdate]
-    public function autoUpdateDate(): void
-    {
-        if ($this->createdAt == null) {
-            $this->setCreatedAt(new \DateTimeImmutable());
-        }
-        $this->setUpdatedAt(new \DateTimeImmutable());
     }
 
     public function getStatus(): ?string
