@@ -13,16 +13,24 @@ use App\Repository\FruitsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FruitsRepository::class)]
 #[ApiResource(
-    operations: [
-        new Get(),
-        // new Patch(),
-        // new Delete(),
-        // new GetCollection(),
-        new Post(),
+    // operations: [
+    //     new Get(),
+    //     new Patch(),
+    //     new Delete(),
+    //     new GetCollection(),
+    //     new Post(),
+    // ]
+)]
+#[GetCollection()]
+#[Get()]
+#[POST(
+    denormalizationContext: [
+        'groups' => ['wantToExpose']
     ]
 )]
 #[HasLifecycleCallbacks]
@@ -48,6 +56,7 @@ class Fruits
         minMessage: 'Name should minimum {{ limit }} characters',
         maxMessage: 'Name should maximum {{ limit }} characters'
     )]
+    #[Groups(['wantToExpose'])]
     private ?string $name = null;
 
     /**
@@ -63,6 +72,7 @@ class Fruits
         minMessage: 'Description should minimum {{ limit }} characters',
         maxMessage: 'Description should maximum {{ limit }} characters'
     )]
+    #[Groups(['wantToExpose'])]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -72,6 +82,7 @@ class Fruits
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['wantToExpose'])]
     private ?string $status = null;
 
     public function getId(): ?int
